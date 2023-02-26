@@ -12,6 +12,7 @@
 		E49B65AC29AA2C9000A6B955 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49B65AB29AA2C9000A6B955 /* ViewController.swift */; };
 		E49B65B129AA2C9200A6B955 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E49B65B029AA2C9200A6B955 /* Assets.xcassets */; };
 		E49B65B429AA2C9200A6B955 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E49B65B229AA2C9200A6B955 /* LaunchScreen.storyboard */; };
+		E49B65BE29AA3E1100A6B955 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E49B65BD29AA3E1100A6B955 /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E49B65BE29AA3E1100A6B955 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +82,9 @@
 			dependencies = (
 			);
 			name = Pomodoro;
+			packageProductDependencies = (
+				E49B65BD29AA3E1100A6B955 /* SnapKit */,
+			);
 			productName = Pomodoro;
 			productReference = E49B65A429AA2C9000A6B955 /* Pomodoro.app */;
 			productType = "com.apple.product-type.application";
@@ -108,6 +113,9 @@
 				Base,
 			);
 			mainGroup = E49B659B29AA2C9000A6B955;
+			packageReferences = (
+				E49B65BC29AA3E1100A6B955 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			productRefGroup = E49B65A529AA2C9000A6B955 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -346,6 +354,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E49B65BC29AA3E1100A6B955 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E49B65BD29AA3E1100A6B955 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E49B65BC29AA3E1100A6B955 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E49B659C29AA2C9000A6B955 /* Project object */;
 }
