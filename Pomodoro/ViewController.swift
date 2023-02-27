@@ -13,10 +13,9 @@ class ViewController: UIViewController {
     var timer = Timer()
     var isTimerStarted = false
     var isAnimationStarted = false
-    
     var time = 25
     let shapeLayer = CAShapeLayer()
-    let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
+
     
     lazy var modeLabel: UILabel = {
         let label = UILabel()
@@ -74,28 +73,24 @@ class ViewController: UIViewController {
         return imageView
     }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .black
-        setLayout()
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        self.animationCircular()
-    }
     
     @objc private func startButtonTapped() {
         cancelButton.isEnabled = true
         cancelButton.alpha = 2.0
-        startAnimation()
         
         if !isTimerStarted{
+            
+            startResuneAnimation()
             startTimer()
+            isAnimationStarted = true
+            
             isTimerStarted = true
             startButton.configuration?.image = UIImage(named: "pause")
             
+            
         } else {
+            isTimerStarted = false
+            pauseAnimation()
             timer.invalidate()
             isTimerStarted = false
             startButton.configuration?.image = UIImage(named: "play")
@@ -103,9 +98,10 @@ class ViewController: UIViewController {
     }
     
     @objc private func cancelButtonTapped() {
+        stopAnimation()
+        
         cancelButton.isEnabled = false
         cancelButton.alpha = 1.0
-        resetAnimation()
         timer.invalidate()
         time = 25
         isTimerStarted = false
@@ -119,12 +115,14 @@ class ViewController: UIViewController {
     
     @objc func updateTimer(){
         if time<1 {
-            cancelButton.isEnabled = true
+            cancelButton.isEnabled = false
             startButton.configuration?.image = UIImage(named: "play")
+            timer.invalidate()
             modeLabel.text = "Break Time"
             modeLabel.textColor = .green
-            cancelButtonTapped()
+            resetAnimation()
             time = 5
+            isTimerStarted = false
         }
         else { time -= 1}
         timeLabel.text = formatTime()
@@ -136,15 +134,24 @@ class ViewController: UIViewController {
         return String(format:"%02i:%02i", minutes, seconds)
     }
     
+    func startResuneAnimation(){
+        if !isAnimationStarted{
+            startAnimation()
+        } else {
+            resumeAnimation()
+        }
+    }
+    
     func startAnimation() {
+        resetAnimation()
         let basicAnimation = CABasicAnimation(keyPath: "strokeEnd")
         basicAnimation.fromValue = 1
         basicAnimation.toValue = 0
         basicAnimation.duration = CFTimeInterval(time)
         basicAnimation.fillMode = CAMediaTimingFillMode.forwards
-        basicAnimation.isRemovedOnCompletion = true
+        basicAnimation.isRemovedOnCompletion = false
         basicAnimation.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.linear)
-        shapeLayer.strokeEnd = 0
+        shapeLayer.strokeEnd = 1
         shapeLayer.add(basicAnimation, forKey: "basicAnimation")
     }
     
@@ -154,12 +161,30 @@ class ViewController: UIViewController {
         shapeLayer.timeOffset = pausedTime
     }
     
-    func resetAnimation() {
-        let pausedTime: CFTimeInterval = shapeLayer.timeOffset
+    func resumeAnimation(){
+        let pausedTime = shapeLayer.timeOffset
         shapeLayer.speed = 1.0
         shapeLayer.timeOffset = 0.0
+        shapeLayer.beginTime = 0.0;
         let timeSincePause: CFTimeInterval = shapeLayer.convertTime(CACurrentMediaTime(), from: nil) - pausedTime
-        shapeLayer.beginTime = timeSincePause
+        shapeLayer.beginTime = timeSincePause;
+    }
+    
+    func resetAnimation() {
+        shapeLayer.speed = 1.0
+        shapeLayer.timeOffset = 0.0
+        shapeLayer.beginTime = 0.0;
+        shapeLayer.strokeEnd = 0.0
+        isAnimationStarted = false
+    }
+    
+    func stopAnimation() {
+        shapeLayer.speed = 1.0
+        shapeLayer.timeOffset = 0.0
+        shapeLayer.beginTime = 0.0;
+        shapeLayer.strokeEnd = 0.0
+        shapeLayer.removeAllAnimations()
+        isAnimationStarted = false
     }
     
     func animationCircular() {
@@ -175,6 +200,17 @@ class ViewController: UIViewController {
         shapeLayer.lineCap = CAShapeLayerLineCap.round
         shapeLayer.strokeColor = .init(red: 1, green: 1, blue: 1, alpha: 1)
         shapeView.layer.addSublayer(shapeLayer)
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .black
+        setLayout()
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.animationCircular()
     }
     
     private func setLayout() {
