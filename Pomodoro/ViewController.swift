@@ -13,9 +13,9 @@ class ViewController: UIViewController {
     var timer = Timer()
     var isTimerStarted = false
     var isAnimationStarted = false
+    var isWorkTimeStarted = false
     var time = 25
     let shapeLayer = CAShapeLayer()
-
     
     lazy var modeLabel: UILabel = {
         let label = UILabel()
@@ -37,9 +37,9 @@ class ViewController: UIViewController {
     
     lazy var startButton: UIButton = {
         let button = UIButton(type: .system)
-        button.configuration = .gray()
+        button.configuration = .filled()
         button.configuration?.baseBackgroundColor = .init(red: 1, green: 1, blue: 1, alpha: 0.5)
-        button.configuration?.image = UIImage(named: "play")
+        button.configuration?.image = UIImage(systemName: "play.circle")
         button.configuration?.cornerStyle = .capsule
         button.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
         return button
@@ -47,11 +47,22 @@ class ViewController: UIViewController {
     
     lazy var cancelButton: UIButton = {
         let button = UIButton(type: .system)
-        button.configuration = .gray()
+        button.configuration = .filled()
         button.configuration?.baseBackgroundColor = .init(red: 1, green: 1, blue: 1, alpha: 0.5)
-        button.configuration?.image = UIImage(named: "stop")
+        button.configuration?.image = UIImage(systemName: "stop.circle")
         button.configuration?.cornerStyle = .capsule
         button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var resetButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.configuration = .filled()
+        button.configuration?.baseBackgroundColor = .init(red: 1, green: 1, blue: 1, alpha: 0.5)
+        button.configuration?.image = UIImage(systemName: "repeat.circle")
+        button.imageView?.tintColor = .lightGray
+        button.configuration?.cornerStyle = .capsule
+        button.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -63,6 +74,7 @@ class ViewController: UIViewController {
         stackView.distribution = .fillEqually
         stackView.addArrangedSubview(startButton)
         stackView.addArrangedSubview(cancelButton)
+        stackView.addArrangedSubview(resetButton)
         return stackView
     }()
     
@@ -79,34 +91,40 @@ class ViewController: UIViewController {
         cancelButton.alpha = 2.0
         
         if !isTimerStarted{
-            
             startResuneAnimation()
             startTimer()
             isAnimationStarted = true
-            
             isTimerStarted = true
-            startButton.configuration?.image = UIImage(named: "pause")
-            
+            startButton.configuration?.image = UIImage(systemName: "pause.circle")
             
         } else {
             isTimerStarted = false
             pauseAnimation()
             timer.invalidate()
             isTimerStarted = false
-            startButton.configuration?.image = UIImage(named: "play")
+            startButton.configuration?.image = UIImage(systemName: "play.circle")
         }
     }
     
     @objc private func cancelButtonTapped() {
         stopAnimation()
-        
         cancelButton.isEnabled = false
         cancelButton.alpha = 1.0
         timer.invalidate()
         time = 25
         isTimerStarted = false
         timeLabel.text = "00:25"
-        startButton.configuration?.image = UIImage(named: "play")
+        startButton.configuration?.image = UIImage(systemName: "play.circle")
+    }
+    
+    @objc private func resetButtonTapped() {
+        stopAnimation()
+        timer.invalidate()
+        time = 25
+        isTimerStarted = false
+        modeLabel.text = "Focus time"
+        modeLabel.textColor = .orange
+        timeLabel.text = "00:25"
     }
     
     func startTimer(){
@@ -116,13 +134,15 @@ class ViewController: UIViewController {
     @objc func updateTimer(){
         if time<1 {
             cancelButton.isEnabled = false
-            startButton.configuration?.image = UIImage(named: "play")
+            startButton.configuration?.image = UIImage(systemName: "play.circle")
             timer.invalidate()
             modeLabel.text = "Break Time"
             modeLabel.textColor = .green
             resetAnimation()
+            timer.invalidate()
             time = 5
             isTimerStarted = false
+            isWorkTimeStarted = false
         }
         else { time -= 1}
         timeLabel.text = formatTime()
@@ -134,7 +154,7 @@ class ViewController: UIViewController {
         return String(format:"%02i:%02i", minutes, seconds)
     }
     
-    func startResuneAnimation(){
+    func startResuneAnimation() {
         if !isAnimationStarted{
             startAnimation()
         } else {
@@ -205,6 +225,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        setupHierarchy()
         setLayout()
     }
     
@@ -213,11 +234,13 @@ class ViewController: UIViewController {
         self.animationCircular()
     }
     
-    private func setLayout() {
-        
+    private func setupHierarchy() {
         [modeLabel, timeLabel, shapeView, buttonsStackView].forEach {
             view.addSubview($0)
         }
+    }
+    
+    private func setLayout() {
         
         modeLabel.snp.makeConstraints {make in
             make.centerX.equalToSuperview()
@@ -236,8 +259,9 @@ class ViewController: UIViewController {
         
         buttonsStackView.snp.makeConstraints {make in
             make.top.equalTo(timeLabel.snp.bottom).offset(198)
-            make.leading.trailing.equalToSuperview().inset(100)
+            make.leading.trailing.equalToSuperview().inset(80)
         }
     }
 }
+
 
